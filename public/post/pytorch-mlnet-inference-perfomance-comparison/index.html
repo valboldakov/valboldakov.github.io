@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en" class="dark">
+<head>
+
+<title>valboldakov | PyTorch and ML.NET Inference Performance Comparison</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href='/favicon/apple-touch-icon.png'>
+    <link rel="icon" type="image/png" sizes="32x32" href='/favicon/favicon-32x32.png'>
+    <link rel="icon" type="image/png" sizes="16x16" href='/favicon/favicon-16x16.png'>
+    <link rel="manifest" href='/favicon/site.webmanifest' />
+    <link rel="mask-icon" href=' /favicon/safari-pinned-tab.svg' color="#5bbad5" />
+    <link rel="shortcut icon" href='/favicon/favicon.ico' />
+    <meta name="theme-color" content="#ffffff">
+    <meta property="og:title" content="valboldakov | PyTorch and ML.NET Inference Performance Comparison" />
+    
+    
+    
+    <link rel="stylesheet" href="/css/style.min.4b4ddf4f8f27a6590985101d5a3e21d1bc205eb5a607e76a4d77b7c32f1ca9b9.css" />
+    
+    <link href=' /css/blonde.min.css' rel="stylesheet" type="text/css" media="print"
+        onload="this.media=' all'">
+    
+
+
+
+<meta name="description" content="Let&#39;s say you have a working and a developer-friendly .NET ecosystem. There are a lot of services and your team doesn&#39;t cherish the idea of having a service built without .NET. Additionally, there is a pending request to develop software to serve some machine learning models.">
+<meta property="og:site_name" content="valboldakov">
+<meta property="og:description" content="Let&#39;s say you have a working and a developer-friendly .NET ecosystem. There are a lot of services and your team doesn&#39;t cherish the idea of having a service built without .NET. Additionally, there is a pending request to develop software to serve some machine learning models.">
+<meta property="og:url" content="https://valboldakov.dev/post/pytorch-mlnet-inference-perfomance-comparison/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="">
+
+<link rel="canonical" href="https://valboldakov.dev/post/pytorch-mlnet-inference-perfomance-comparison/">
+
+<meta name="twitter:description" content="Let&#39;s say you have a working and a developer-friendly .NET ecosystem. There are a lot of services and your team doesn&#39;t cherish the idea of having a service built without .NET. Additionally, there is a pending request to develop software to serve some machine learning models.">
+<meta property="article:published_time" content="2022-02-06T00:00:00&#43;00:00">
+<meta property="article:updated_time" content="2022-02-06T00:00:00&#43;00:00">
+
+
+
+
+
+    
+<meta property="og:image" content="https://valboldakov.dev/img/pytorch-mlnet-inference-perfomance-comparison/1.png">
+<meta property="og:image:url" content="https://valboldakov.dev/img/pytorch-mlnet-inference-perfomance-comparison/1.png">
+    
+
+    
+    <link rel="stylesheet" href='/css/custom.css'>
+    <i class="dark hidden"></i>
+</head><body class="font-sans">
+    <div class="min-h-screen flex flex-col bg-gray-100 dark:bg-warmgray-800"><div class="bg-gray-800">
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6">
+            <div class="flex items-center flex-no-shrink bg-gray-800 text-white mr-6">
+                <a href="https://valboldakov.dev"><span class="font-semibold text-2xl tracking-tight">valboldakov</span></a>
+            </div>
+            <div class="flex md:hidden">
+                <div class="py-2">
+                    <button onclick="toggleDarkMode()" class="focus:outline-none mr-1" aria-label="Darkmode Toggle Button"><i id="icon"
+                            class="icon-moon inline-flex align-middle leading-normal text-lg text-white"></i></button>
+                    <span class="text-white">|</span>
+                </div>
+                <button id="hamburgerbtn" class="flex items-center px-3 py-1 text-white hover:opacity-50" aria-label="Hamburger Button">
+                    <span class="icon-menu text-2xl"></span>
+                </button>
+            </div>
+            <div class="hidden w-full md:flex md:flex-row sm:items-center md:w-auto" id="mobileMenu">
+                <div class="text-sm lg:flex-grow">
+                </div>
+                <div class="navmenu">
+                    
+                    <a href="/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        Home
+                    </a>
+                    
+                    <a href="/about/"
+                        class="no-underline duration-200 block mt-4 sm:inline-block sm:mt-0 text-white hover:opacity-50 mr-4">
+                        About
+                    </a>
+                    
+                </div>
+                <div class="text-white invisible md:visible">
+                    <span>|</span>
+                    <button onclick="toggleDarkMode()" class="focus:outline-none" aria-label="Darkmode Toggle Button"><i id="icon2"
+                            class="icon-moon hover:opacity-50 duration-200 inline-flex align-middle leading-normal text-lg ml-2"></i></button>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<style>
+    .active {
+        display: block;
+    }
+</style>
+
+<script>
+    let hamburger = document.getElementById('hamburgerbtn');
+
+    let mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', function () {
+        mobileMenu.classList.toggle('active');
+    });
+</script>
+<div class="container max-w-screen-xl mx-auto mt-4 flex-grow px-5 lg:px-0" id="content">
+            <div class="lg:mx-5">
+<div class="grid grid-cols-3 gap-4">
+    
+    <div class="col-span-3 lg:col-span-2 dark:text-white">
+        
+            <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+                <h1 class="mb-2 text-4xl font-bold">PyTorch and ML.NET Inference Performance Comparison</h1>
+                <aside id="meta">
+                    <div>
+                        <section>
+                            <h4 id="date"><span class="icon-access_time mr-2"></span>2022/02/06
+                            </h4>
+                        </section>
+                        
+                        <div id="tags">
+                            <span class="icon-local_offer mr-1"></span>
+                            
+                            <a href="https://valboldakov.dev/%20tags/machine-learning">machine-learning</a> |
+                            
+                            <a href="https://valboldakov.dev/%20tags/pytorch">pytorch</a> |
+                            
+                            <a href="https://valboldakov.dev/%20tags/ml.net">ml.net</a> |
+                            
+                        </div>
+                        
+                    </div>
+                </aside>
+                
+                <img class="py-4" src="https://valboldakov.dev/img/pytorch-mlnet-inference-perfomance-comparison/1.png">
+                
+                <div class="prose md:prose-lg lg:prose-xl max-w-none dark:prose-invert mt-5"><p>Let&rsquo;s say you have a working and a developer-friendly .NET ecosystem.
+There are a lot of services and your team doesn&rsquo;t cherish the idea of having a service built without .NET.
+Additionally, there is a pending request to develop software to serve some machine learning models.</p>
+<p>Most of the machine learning models are created with Python and libraries like scikit-learn, PyTorch, or TensorFlow. Here come the questions. Should the team just implement a Python service with the abovementioned libraries? Perhaps using ML.NET for the sake of the ecosystem consistency would be a better solution?
+I will try to find some rationale behind these solutions. To resolve it I made inferences of the ResNet18 deep learning model using PyTorch and ML.NET and compared their performance.</p>
+<h3 id="pytorch-performance">PyTorch Performance</h3>
+<p>PyTorch is a widely known open source library for deep learning. It&rsquo;s no wonder that most of the researchers use it to create a state of the art models. It&rsquo;s a popular choice for Python developers to evaluate acquired models.
+To get measurements of the models I used the following environment and hardware:</p>
+<ul>
+<li>GeForce GTX 1660.</li>
+<li>AMD Ryzen 5 3600.</li>
+<li>Ubuntu 18.04.</li>
+<li>CUDA Toolkit 10.1.</li>
+<li>cuDNN 7.0.</li>
+<li>torch 1.7.1.</li>
+<li>torchvision 0.8.2.</li>
+</ul>
+<p>The ResNet18 model is obtained from the PyTorch Hub. In order to get the inference times, I made 10000 inferences with GPU and CPU. At this point, my interest didn&rsquo;t lie in the output of the model so using a random tensor as an input sufficed. It&rsquo;s also the reason why I didn&rsquo;t scale the input tensor. I used this code to generate inference time:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">resnet_gpu_model <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>jit<span style="color:#f92672">.</span>trace(torchvision<span style="color:#f92672">.</span>models<span style="color:#f92672">.</span>resnet18(pretrained<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)<span style="color:#f92672">.</span>eval()<span style="color:#f92672">.</span>cuda(), torch<span style="color:#f92672">.</span>randn(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">256</span>, <span style="color:#ae81ff">260</span>)<span style="color:#f92672">.</span>cuda())
+resnet_cpu_model <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>jit<span style="color:#f92672">.</span>trace(torchvision<span style="color:#f92672">.</span>models<span style="color:#f92672">.</span>resnet18(pretrained<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)<span style="color:#f92672">.</span>eval()<span style="color:#f92672">.</span>cpu(), torch<span style="color:#f92672">.</span>randn(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">256</span>, <span style="color:#ae81ff">260</span>))
+gpu_inference_time <span style="color:#f92672">=</span> []
+cpu_inference_time <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10000</span>):
+    input_tensor <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>randn(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">256</span>, <span style="color:#ae81ff">260</span>)
+    input_batch <span style="color:#f92672">=</span> input_tensor<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">0</span>)
+    gpu_input_batch <span style="color:#f92672">=</span> input_batch<span style="color:#f92672">.</span>cuda()
+    <span style="color:#66d9ef">with</span> torch<span style="color:#f92672">.</span>no_grad():
+        start <span style="color:#f92672">=</span> timer()
+        gpu_output <span style="color:#f92672">=</span> resnet_gpu_model(gpu_input_batch)
+        end <span style="color:#f92672">=</span> timer()
+        gpu_inference_time<span style="color:#f92672">.</span>append(end <span style="color:#f92672">-</span> start)
+        start <span style="color:#f92672">=</span> timer()
+        cpu_output <span style="color:#f92672">=</span> resnet_cpu_model(input_batch)
+        end <span style="color:#f92672">=</span> timer()
+        cpu_inference_time<span style="color:#f92672">.</span>append(end <span style="color:#f92672">-</span> start)
+</code></pre></div><p>The following distributions were received after the code execution:</p>
+<p><img src="/img/pytorch-mlnet-inference-perfomance-comparison/2.png" alt=""></p>
+<p>The mean inference time for CPU was 0.026 seconds and 0.001 seconds for GPU. Their standard deviations were 0.003 and 0.0001 respectively. GPU execution was roughly 10 times faster, which is what was expected.</p>
+<h3 id="mlnet-introduction">ML.NET Introduction</h3>
+<p>ML.NET is a machine learning framework built for .NET developers. It has a built-in AutoML allowing you to avoid choosing the best type of model manually. However, it lacks the possibility to define and train your own neural networks. You need to import your model in ONNX format from PyTorch with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">torch<span style="color:#f92672">.</span>onnx<span style="color:#f92672">.</span>export(resnet_cpu_model,
+                  input_batch,
+                  <span style="color:#e6db74">&#34;resnet18.onnx&#34;</span>,
+                  export_params<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+                  do_constant_folding<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+                  inpput_names <span style="color:#f92672">=</span> ut_names <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;input&#39;</span>],
+                  out[<span style="color:#e6db74">&#39;output&#39;</span>],
+                  dynamic_axes<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;input&#39;</span> : {<span style="color:#ae81ff">0</span> : <span style="color:#e6db74">&#39;batch_size&#39;</span>},
+                                <span style="color:#e6db74">&#39;output&#39;</span> : {<span style="color:#ae81ff">0</span> : <span style="color:#e6db74">&#39;batch_size&#39;</span>}})
+</code></pre></div><p>ML.NET heavily relies on the ONNX Runtime accelerator to make use of the deep learning models and all the inferences are made using ONNX Runtime.</p>
+<p>To conduct ML.NET inferences I used the same hardware but another environment because of ML.NET requirements:</p>
+<ul>
+<li>Ubuntu 18.04.</li>
+<li>CUDA Toolkit 10.2.</li>
+<li>cuDNN 8.</li>
+</ul>
+<p>This ML.NET code will have a more thorough description because it’s much less popular than PyTorch. At the first step, we need to install NuGET packages with ML.NET and ONNX Runtime:</p>
+<ul>
+<li>Microsoft.ML 1.5.4.</li>
+<li>Microsoft.ML.OnnxRuntime.Gpu 1.6.0.</li>
+<li>Microsoft.ML.OnnxTransformer 1.5.4.</li>
+</ul>
+<p>Before trying to make any inference we need to create two classes representing the input and output of the model:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cs" data-lang="cs"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ImageLabels</span>
+    {
+<span style="color:#a6e22e">        [ColumnName(&#34;output&#34;)]</span> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">float</span>[] Labels { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PixelValues</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> ChannelAmount = <span style="color:#ae81ff">3</span>;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> ImageWidth = <span style="color:#ae81ff">256</span>;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> ImageHeight = <span style="color:#ae81ff">260</span>;
+<span style="color:#a6e22e">
+</span><span style="color:#a6e22e">        [VectorType(3, 256, 260)]</span>
+<span style="color:#a6e22e">        [ColumnName(&#34;input&#34;)]</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">float</span>[] Values { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    }
+</code></pre></div><p>The most important thing is to create an MLContext object. This object is central to the ML.NET framework. Every inference and preprocessing operations are defined with it. It has a nice feature to set a random seed to make operations deterministic.</p>
+<p>As the next step, you can define a model estimator, fit it to let it know about the input data scheme, and finally create a prediction engine. This can be achieved with the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cs" data-lang="cs"><span style="color:#66d9ef">var</span> mlContext = <span style="color:#66d9ef">new</span> MLContext();
+<span style="color:#66d9ef">var</span> gpuModelEstimator = mlContext.Transforms.ApplyOnnxModel(outputColumnName: <span style="color:#e6db74">&#34;output&#34;</span>, inputColumnName: <span style="color:#e6db74">&#34;input&#34;</span>, modelFile: OnnxModelPath, gpuDeviceId: <span style="color:#ae81ff">0</span>);
+<span style="color:#66d9ef">var</span> cpuModelEstimator = mlContext.Transforms.ApplyOnnxModel(outputColumnName: <span style="color:#e6db74">&#34;output&#34;</span>, inputColumnName: <span style="color:#e6db74">&#34;input&#34;</span>, modelFile: OnnxModelPath);
+<span style="color:#66d9ef">var</span> data = mlContext.Data.LoadFromEnumerable(<span style="color:#66d9ef">new</span> List&lt;PixelValues&gt;());
+<span style="color:#66d9ef">var</span> gpuModel = gpuModelEstimator.Fit(data);
+<span style="color:#66d9ef">var</span> cpuModel = cpuModelEstimator.Fit(data);
+<span style="color:#66d9ef">var</span> gpuPredictionEngine = mlContext.Model.CreatePredictionEngine&lt;PixelValues, ImageLabels&gt;(gpuModel);
+<span style="color:#66d9ef">var</span> cpuPredictionEngine = mlContext.Model.CreatePredictionEngine&lt;PixelValues, ImageLabels&gt;(cpuModel);
+</code></pre></div><p>Finally, you can create some input data, make inferences, and look at your estimation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cs" data-lang="cs"><span style="color:#66d9ef">var</span> randNum = <span style="color:#66d9ef">new</span> Random();
+<span style="color:#66d9ef">var</span> gpuInferenceTime = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">double</span>&gt;();
+<span style="color:#66d9ef">var</span> cpuInferenceTime = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">double</span>&gt;();
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> i = <span style="color:#ae81ff">0</span>; i &lt; <span style="color:#ae81ff">10000</span>; ++i)
+{
+    <span style="color:#66d9ef">var</span> <span style="color:#66d9ef">value</span> = <span style="color:#66d9ef">new</span> PixelValues
+    {
+        Values = Enumerable
+            .Repeat(<span style="color:#ae81ff">0</span>, PixelValues.ChannelAmount * PixelValues.ImageHeight * PixelValues.ImageWidth)
+            .Select(<span style="color:#ae81ff">_</span> =&gt; (<span style="color:#66d9ef">float</span>) randNum.NextDouble()).ToArray()
+    };
+    <span style="color:#66d9ef">var</span> sw = <span style="color:#66d9ef">new</span> Stopwatch();
+    sw.Start();
+    <span style="color:#66d9ef">var</span> labels = gpuPredictionEngine.Predict(<span style="color:#66d9ef">value</span>).Labels;
+    sw.Stop();
+    gpuInferenceTime.Add(sw.Elapsed.TotalSeconds);
+    sw.Start();
+    labels = cpuPredictionEngine.Predict(<span style="color:#66d9ef">value</span>).Labels;
+    sw.Stop();
+    cpuInferenceTime.Add(sw.Elapsed.TotalSeconds);
+}
+</code></pre></div><p>This resulted in the following distributions:</p>
+<p><img src="/img/pytorch-mlnet-inference-perfomance-comparison/3.png" alt=""></p>
+<p>Mean inference time for CPU was 0.016 seconds and 0.005 seconds for GPU with standard deviations 0.0029 and 0.0007 respectively.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Upon measuring the performance of each framework we can summarize it with the following graph:</p>
+<p><img src="/img/pytorch-mlnet-inference-perfomance-comparison/4.png" alt=""></p>
+<p>ML.NET can evaluate deep learning models with a decent speed and is faster than PyTorch using CPU. It can be a dealbreaker for production use. With ML.NET you can have all the advantages of the .NET ecosystem, fast web servers like Kestrel, and easily-maintainable object-oriented code.</p>
+<p>Yet there are some drawbacks to take note of. PyTorch GPU inference is faster. Using ML.NET for some tasks which rely heavily on GPU computation may be slower. Before evaluating a model you would often need to preprocess your data. Even though ML.NET has a rich library of different transformers for data preprocessing, it may be a complex task to reproduce the same preprocessing in your .NET software.</p>
+<p>Deciding what framework to use depends on your current situation. How much time do you have to develop the service? How important performance is for you? Does data preprocessing depend on some Python library? You need the answer to all of these questions while keeping in mind ML.NET and PyTorch framework performance.</p>
+</div>
+                <aside id="meta">
+                    
+                </aside>
+            </div>
+            <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+                <div class="grid grid-cols-2">
+                    <div class="col-span-1">
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="bg-white dark:bg-warmgray-900 p-5 my-4">
+                <div class="mb-3">
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="hidden lg:block lg:col-span-1">
+            <div class="mb-3">
+    <form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+        <label>
+            <input class="w-full p-3 focus:outline-none dark:bg-warmgray-900 dark:text-white placeholder-gray-700 dark:placeholder-gray-300" type="search"
+                placeholder="Search..." value="" name="q" aria-label="Search">
+        </label>
+        <input class="hidden" type="submit" value="Search">
+        <input type="hidden" name="sitesearch" value="https://valboldakov.dev" />
+    </form>
+</div>
+            <div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 px-3 dark:text-gray-300 font-bold">Archives</p>
+    
+    
+    <a class="text-center block duration-100 py-2 px-4 mx-4 hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-warmgray-800"
+        href="https://valboldakov.dev/archives/2022/02">2022/02 (1)</a>
+    
+    
+</div>
+            
+            
+<div class="bg-white panel mb-3 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-3 pl-3 dark:text-gray-300 font-bold">Tags</p>
+    <div class="panel-block p-2">
+        <a href="/%20/tags/machine-learning">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                machine-learning
+            </span></a>
+        <a href="/%20/tags/ml.net">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                ml.net
+            </span></a>
+        <a href="/%20/tags/pytorch">
+            <span
+                class="duration-100 inline-flex py-2 leading-4 mr-2 mb-2 content-center bg-gray-100 justify-center h-8 px-3 text-blue-500 hover:text-blue-900 dark:bg-warmgray-800">
+                pytorch
+            </span></a>
+    </div>
+</div>
+
+            
+
+<div class="bg-white panel mb-3 pb-5 dark:bg-warmgray-900">
+    <p class="text-xl text-center text-gray-700 py-5 dark:text-gray-300 font-bold">Recent Posts</p>
+    <div class="mx-6">
+        
+        <a href="/post/pytorch-mlnet-inference-perfomance-comparison/" class="">
+            <div
+                class="w-full block mt-3 bg-white hover:bg-gray-100 duration-200 dark:bg-warmgray-900 dark:text-gray-200 dark:hover:bg-warmgray-800">
+                <div class="px-2">
+                    <div class="text-gray-900 font-bold text-xl dark:text-white">PyTorch and ML.NET Inference Performance Comparison</div>
+                    <p class="text-sm text-gray-600 flex items-center pb-1 dark:text-gray-400">
+                        <time><span class="icon-access_time mr-1"></span>2022/02/06</time>
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+        </div>
+        
+    </div>
+    
+            </div>
+        </div><footer class="bg-gray-800 text-white p-6">
+    
+    <div class="container max-w-screen-xl mr-auto ml-auto">
+        <p>&copy; 2022 <a href="https://valboldakov.dev" class="duration-200 hover:opacity-50">valboldakov</a></p>
+        <p>Powered by <a href="https://gohugo.io/" class="duration-200 hover:opacity-50">Hugo</a>, Theme <a
+                href="https://github.com/opera7133/Blonde" class="duration-200 hover:opacity-50">Blonde</a>.</p>
+    </div>
+    <script>
+        var icon = document.getElementById("icon");
+        var icon2 = document.getElementById("icon2");
+        
+        if (document.documentElement.classList.contains("dark") || localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          icon.classList.remove("icon-moon");
+          icon.classList.add("icon-sun");
+          icon2.classList.remove("icon-moon");
+          icon2.classList.add("icon-sun");
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        function toggleDarkMode() {
+        if (document.documentElement.classList.contains('dark')) {
+            icon.classList.remove("icon-sun");
+            icon.classList.add("icon-moon");
+            icon2.classList.remove("icon-sun");
+            icon2.classList.add("icon-moon");
+            document.documentElement.classList.remove('dark')
+            localStorage.theme = 'light'
+        } else {
+            icon.classList.remove("icon-moon");
+            icon.classList.add("icon-sun");
+            icon2.classList.remove("icon-moon");
+            icon2.classList.add("icon-sun");
+            document.documentElement.classList.add('dark')
+            localStorage.theme = 'dark'
+        }
+    }
+    </script>
+</footer>
+</div>
+</body>
+
+</html>

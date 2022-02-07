@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>2022/02 on valboldakov</title>
+    <link>https://valboldakov.dev/archives/2022/02/</link>
+    <description>Recent content in 2022/02 on valboldakov</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://valboldakov.dev/archives/2022/02/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PyTorch and ML.NET Inference Performance Comparison</title>
+      <link>https://valboldakov.dev/post/pytorch-mlnet-inference-perfomance-comparison/</link>
+      <pubDate>Sun, 06 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://valboldakov.dev/post/pytorch-mlnet-inference-perfomance-comparison/</guid>
+      <description>Let&amp;rsquo;s say you have a working and a developer-friendly .NET ecosystem. There are a lot of services and your team doesn&amp;rsquo;t cherish the idea of having a service built without .NET. Additionally, there is a pending request to develop software to serve some machine learning models.
+Most of the machine learning models are created with Python and libraries like scikit-learn, PyTorch, or TensorFlow. Here come the questions. Should the team just implement a Python service with the abovementioned libraries?</description>
+    </item>
+    
+  </channel>
+</rss>
