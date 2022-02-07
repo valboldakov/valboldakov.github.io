@@ -14,7 +14,7 @@ enableRobotsTXT = true
 googleAnalytics = "G-4DK16ZTNMR"
 
 # Disqus Comment System
-#disqusShortname = ""
+disqusShortname = "valboldakov-dev"
 
 [params]
 # Base color of the website.
