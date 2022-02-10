@@ -2,34 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://valboldakov.dev/about/</loc>
+    <loc>http://localhost:1313/about/</loc>
     <lastmod>2022-02-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/tags/machine-learning/</loc>
+    <loc>http://localhost:1313/tags/machine-learning/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/tags/ml.net/</loc>
+    <loc>http://localhost:1313/tags/ml.net/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/post/</loc>
+    <loc>http://localhost:1313/post/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/tags/pytorch/</loc>
+    <loc>http://localhost:1313/tags/pytorch/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/post/pytorch-mlnet-inference-perfomance-comparison/</loc>
+    <loc>http://localhost:1313/post/pytorch-mlnet-inference-perfomance-comparison/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/</loc>
+    <loc>http://localhost:1313/</loc>
     <lastmod>2022-02-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://valboldakov.dev/archives/2022/02/</loc>
+    <loc>http://localhost:1313/archives/2022/02/</loc>
   </url><url>
-    <loc>https://valboldakov.dev/archives/</loc>
+    <loc>http://localhost:1313/archives/</loc>
   </url><url>
-    <loc>https://valboldakov.dev/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url>
 </urlset>
